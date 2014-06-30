@@ -1,4 +1,4 @@
--- @author cedlemo  
+-- @author cedlemo
 
 local setmetatable = setmetatable
 local ipairs = ipairs
@@ -18,7 +18,7 @@ local linegraph = { mt = {} }
 
 local data = setmetatable({}, { __mode = "k" })
 
----Fill all the widget (width * height) with this color (default is none ). 
+---Fill all the widget (width * height) with this color (default is none ).
 --@usage mygraph:set_background_color(string) -->"#rrggbbaa"
 --@name set_background_color
 --@class function
@@ -94,7 +94,7 @@ local data = setmetatable({}, { __mode = "k" })
 --@usage mygraph:set_label(string)
 --By default the text is : (value_send_to_the_widget *100) .. "%"
 --static string: example set_label("CPU usage:") will display "CUP usage:" on the graph
---dynamic string: use $percent in the string example set_label("Load $percent %") will display "Load 10%" 
+--dynamic string: use $percent in the string example set_label("Load $percent %") will display "Load 10%"
 --@name set_label
 --@class function
 --@param text the text to display
@@ -102,7 +102,7 @@ local data = setmetatable({}, { __mode = "k" })
 
 
 local properties = {    "width", "height", "h_margin", "v_margin",
-                        "background_color", 
+                        "background_color",
                         "graph_background_border", "graph_background_color",
                         "rounded_size", "graph_color", "graph_line_color",
                         "show_text", "text_color", "font_size", "font",
@@ -116,22 +116,22 @@ function linegraph.draw(graph, wibox, cr, width, height)
 
     -- Set the values we need
     local value = data[graph].value
-    
+
     local graph_border_width = 0
     if data[graph].graph_background_border then
         graph_border_width = 1
     end
-    
-    local v_margin =  superproperties.v_margin 
-    if data[graph].v_margin and data[graph].v_margin <= data[graph].height/4 then 
-        v_margin = data[graph].v_margin 
+
+    local v_margin =  superproperties.v_margin
+    if data[graph].v_margin and data[graph].v_margin <= data[graph].height/4 then
+        v_margin = data[graph].v_margin
     end
-    
+
     local h_margin = superproperties.h_margin
-    if data[graph].h_margin and data[graph].h_margin <= data[graph].width / 3 then 
-        h_margin = data[graph].h_margin 
+    if data[graph].h_margin and data[graph].h_margin <= data[graph].width / 3 then
+        h_margin = data[graph].h_margin
     end
-    
+
     local background_color = data[graph].background_color or superproperties.background_color
     local rounded_size = data[graph].rounded_size or superproperties.rounded_size
     local graph_background_color = data[graph].graph_background_color or superproperties.graph_background_color
@@ -142,31 +142,31 @@ function linegraph.draw(graph, wibox, cr, width, height)
     local text_background_color = data[graph].text_background_color or superproperties.text_background_color
     local font_size =data[graph].font_size or superproperties.font_size
     local font = data[graph].font or superproperties.font
-    
+
     local line_width = 1
     cr:set_line_width(line_width)
-    cr:set_antialias("subpixel") 
+    cr:set_antialias("subpixel")
       helpers.draw_rounded_corners_rectangle(	cr,
                                               0, --x
                                               0, --y
-                                              data[graph].width, 
+                                              data[graph].width,
                                               data[graph].height,
                                               background_color,
                                               rounded_size
                                             )
 
-    -- Draw the graph background 
-    --if background_border is set, graph background  must not be drawn on it 
+    -- Draw the graph background
+    --if background_border is set, graph background  must not be drawn on it
     local h_padding = 0
     local v_padding = 0
 
     if background_border ~= nil and h_margin < 1 then
       h_padding = 1
-    else 
+    else
       h_padding = h_margin + 1
     end
     if background_border ~= nil and v_margin < 1 then
-      v_padding = 1 
+      v_padding = 1
     else
       v_padding = v_margin + 1
     end
@@ -174,7 +174,7 @@ function linegraph.draw(graph, wibox, cr, width, height)
       helpers.draw_rounded_corners_rectangle(cr,
                                                 h_padding, --x
                                                 v_padding, --y
-                                                data[graph].width - h_padding, 
+                                                data[graph].width - h_padding,
                                                 data[graph].height - v_padding ,
                                                 graph_background_color,
                                                 rounded_size,
@@ -182,24 +182,24 @@ function linegraph.draw(graph, wibox, cr, width, height)
     helpers.clip_rounded_corners_rectangle(cr,
                                    h_padding, --x
                                    v_padding, --y
-                                   data[graph].width - h_padding, 
+                                   data[graph].width - h_padding,
                                    data[graph].height - v_padding,
                                    rounded_size
                                    )
     --Drawn the graph
-    --if graph_background_border is set, graph must not be drawn on it 
+    --if graph_background_border is set, graph must not be drawn on it
 
     --find nb values we can draw every column_length px
     --if rounded, make sure that graph don't begin or end outside background
     --check for the less value between hight and height to calculate the space for rounded size:
-    local column_length = 6
-    
+    local column_length = 1
+
     if data[graph].height > data[graph].width then
       less_value = data[graph].width/2
     else
       less_value = data[graph].height/2
     end
-    max_column=math.ceil((data[graph].width - (2*h_padding +2*(rounded_size * less_value)))/column_length) 
+    max_column=math.ceil((data[graph].width - (2*h_padding +2*(rounded_size * less_value)))/column_length)
     --Check if the table graph values is empty / not initialized
     --if next(data[graph].values) == nil then
     if #data[graph].values == 0 or #data[graph].values ~= max_column then
@@ -211,10 +211,10 @@ function linegraph.draw(graph, wibox, cr, width, height)
         data[graph].values[i]=0
       end
     end
-    --Fill the graph 
+    --Fill the graph
     x=data[graph].width -(h_padding + rounded_size * less_value)
-    y=data[graph].height-(v_padding) 
-  
+    y=data[graph].height-(v_padding)
+
     cr:new_path()
     cr:move_to(x,y)
     cr:line_to(x,y)
@@ -225,19 +225,19 @@ function linegraph.draw(graph, wibox, cr, width, height)
       x=x-column_length
     end
     y=data[graph].height - (v_padding )
-    cr:line_to(x + column_length ,y) 
+    cr:line_to(x + column_length ,y)
     cr:line_to(width - h_padding,data[graph].height - (v_padding ))
     cr:close_path()
-  
+
     r,g,b,a=helpers.hexadecimal_to_rgba_percent(graph_color)
     cr:set_source_rgba(r, g, b, a)
     cr:fill()
-  
+
     --Draw the graph line
     r,g,b,a=helpers.hexadecimal_to_rgba_percent(graph_line_color)
     cr:set_source_rgba(r, g, b,a)
     x=data[graph].width - (h_padding + rounded_size * less_value)
-    y=data[graph].height-(v_padding) 
+    y=data[graph].height-(v_padding)
     cr:new_path()
     cr:move_to(x,y )
     cr:line_to(x,y )
@@ -249,9 +249,9 @@ function linegraph.draw(graph, wibox, cr, width, height)
     end
     x=x + column_length
     y=data[graph].height - (v_padding )
-    cr:line_to(x ,y ) 
+    cr:line_to(x ,y )
     cr:stroke()
-    
+
     if data[graph].show_text == true then
     --Draw Text and it's background
       cr:set_font_size(font_size)
@@ -261,7 +261,7 @@ function linegraph.draw(graph, wibox, cr, width, height)
       elseif type(font) == "table" then
         cr:select_font_face(font.family or "Sans", font.slang or "normal", font.weight or "normal")
       end
-    
+
       local value = data[graph].values[1] * 100
       if data[graph].label then
         text=string.gsub(data[graph].label,"$percent", value)
@@ -269,11 +269,11 @@ function linegraph.draw(graph, wibox, cr, width, height)
         text=value .. "%"
       end
 
-      helpers.draw_text_and_background(cr, 
-                                        text, 
-                                        h_padding + rounded_size * less_value, 
-                                        data[graph].height/2 , 
-                                        text_background_color, 
+      helpers.draw_text_and_background(cr,
+                                        text,
+                                        h_padding + rounded_size * less_value,
+                                        data[graph].height/2 ,
+                                        text_background_color,
                                         text_color,
                                         false,
                                         true,
@@ -297,11 +297,11 @@ local function add_value(graph, value, group)
 
     local value = value or 0
     local values = data[graph].values
-   
+
     if string.find(value, "nan") then
        value=0
     end
-   
+
     local values = data[graph].values
     table.remove(values, #values)
     table.insert(values,1,value)
@@ -346,7 +346,7 @@ end
 --key to set graph geometry.
 --@return A graph widget.
 function linegraph.new(args)
-    
+
     local args = args or {}
 
     args.width = args.width or 100
@@ -358,11 +358,11 @@ function linegraph.new(args)
     data[graph] = {}
 
     for _, v in ipairs(properties) do
-      data[graph][v] = args[v] 
+      data[graph][v] = args[v]
     end
 
     data[graph].values = {}
-    
+
     -- Set methods
     graph.set_value = add_value
     graph.add_value = add_value
